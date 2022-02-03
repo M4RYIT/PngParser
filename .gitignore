@@ -1,0 +1,5 @@
+/bin
+/SDL2-2.0.20/docs
+/SDL2-2.0.20/lib/x86
+
+*.txt

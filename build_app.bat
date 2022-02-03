@@ -1,0 +1,1 @@
+clang -o bin\main.exe app\src\*.c -I app\inc -I core\inc -L bin -lpng_parser -lzlibwapi -I .\SDL2-2.0.20\include -L .\SDL2-2.0.20\lib\x64 -Xlinker /subsystem:console -lSDL2main -lSDL2 -lshell32
