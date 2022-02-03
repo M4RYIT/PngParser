@@ -19,13 +19,14 @@ int main(int argc, char **argv)
 
     if (!sdl_open_file(file_name, &file_data)) goto quit;
 
-    if (!load_png(file_data, &pixels, &w, &h, &channels)) goto quit;
+    SDL_Texture *static_texture;
+    SDL_Texture *streaming_texture;
 
-    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, w, h);
-    SDL_UpdateTexture(texture, NULL, pixels, w * channels);
-    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+    if (!sdl_png_to_static_texture(file_data, &pixels, &w, &h, &channels, renderer, &static_texture)) goto quit;
 
-    SDL_Rect rect = {128, 128, 128, 128};
+    if (!sdl_png_to_streaming_texture(file_data, &pixels, &w, &h, &channels, renderer, &streaming_texture)) goto quit;
+
+    SDL_Rect rect = {64, 64, 128, 128};
 
     for (;;)
     {
@@ -38,8 +39,12 @@ int main(int argc, char **argv)
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        SDL_RenderCopy(renderer, texture, NULL, &rect);
+        SDL_RenderCopy(renderer, static_texture, NULL, &rect);
 
+        rect.x = 320;
+        SDL_RenderCopy(renderer, streaming_texture, NULL, &rect);
+
+        rect.x = 64;
         SDL_RenderPresent(renderer);
     }
 
