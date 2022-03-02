@@ -10,14 +10,14 @@ int load_png(unsigned char* file_data, unsigned char **pixels, int *w, int *h, i
     unsigned char *full_data = NULL;
 
     vector *v = vector_new(sizeof(chunk));    
-    if (!v) exit_clear(v, full_data, 0);
+    if (!v) return exit_clear(v, full_data, 0);
 
     unsigned char* head = file_data+8;   
     chunk c;
 
     for (;;)
     {
-        read_chunk(&head, &c);
+        if (!read_chunk(&head, &c)) return exit_clear(v, full_data, 0);
         vector_append(v, &c);
         if (!strncmp(c.type, "IEND", 4)) break;
     }
@@ -79,7 +79,7 @@ unsigned char *uncompress_idat_data(int *w, int *h, chunk *idat)
     return full_data;
 }
 
-void read_chunk(unsigned char **head, chunk *c)
+int read_chunk(unsigned char **head, chunk *c)
 {
     c->len = ENDIAN_SWITCH_4BYTES(*((int*)(*head)));
     (*head) += 4;
@@ -91,8 +91,10 @@ void read_chunk(unsigned char **head, chunk *c)
     (*head) += c->len;
     
     unsigned int check = crc32(crc32(0, (unsigned char *)c->type, 4), (unsigned char *)c->data, c->len);
-    unsigned int expected = ENDIAN_SWITCH_4BYTES(*((int*)(*head)));
+    unsigned int expected = ENDIAN_SWITCH_4BYTES(*((int*)(*head)));    
     (*head) += 4;
+
+    return (check!=expected)?0:1;
 }
 
 void read_ihdr(chunk *ihdr, int *w, int *h, char *d, int* ops)

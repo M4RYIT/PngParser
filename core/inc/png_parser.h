@@ -22,7 +22,7 @@ chunk;
 
 int load_png(unsigned char* file_data, unsigned char **pixels, int *w, int *h, int *channels);
 
-void read_chunk(unsigned char **head, chunk *c);
+int read_chunk(unsigned char **head, chunk *c);
 
 void read_ihdr_ex(chunk *ihdr, int *w, int *h, char *d, char *color_t, char *comp_m, char *filter_m, char *inter_m);
 
